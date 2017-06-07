@@ -6,7 +6,8 @@
 require 'byebug'
 
 target = 10
-denominations = [2, 3, 5, 6]
+# denominations = [2, 3, 5, 6]
+denominations = [7, 6]
 
 def count_combos(target, denominations)
   @count ||= 0
