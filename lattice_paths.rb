@@ -29,12 +29,11 @@
 #             1) https://projecteuler.net/problem=15
 #
 #
-require 'byebug'
 
-def lattice_paths(nn, idx = 0, j = 0)
-  return 1 if idx == nn && j == nn
-  return 0 if idx > nn || j > nn
-  return lattice_paths(nn, idx + 1, j) + lattice_paths(nn, idx, j + 1)
+def lattice_paths(n, i = 0, j = 0)
+  return 1 if i == n && j == n
+  return 0 if i > n || j > n
+  return lattice_paths(n, i + 1, j) + lattice_paths(n, i, j + 1)
 end
 
-p lattice_paths(1)
+p lattice_paths(3)
