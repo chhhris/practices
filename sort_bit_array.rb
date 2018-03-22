@@ -6,6 +6,25 @@ require 'byebug'
 arr = [1, 0, 0, 1, 1, 1, 0, 1, 0]
 # arr = [1, 1, 1, 1,  1, 0]
 
+def sort_bit_array(arr)
+  bit_count = [0, 0]
+  arr.each do |bit|
+    bit_count[bit] += 1
+  end
+
+  arr.each_with_index do |bit, index|
+    if bit_count[0] > 0
+      arr[index] = 0
+      bit_count[0] -= 1
+    else
+      arr[index] = 1
+    end
+  end
+
+  arr
+end
+
+# p sort_bit_array(arr)
 
 def swapper(arr)
   left_pointer = 0

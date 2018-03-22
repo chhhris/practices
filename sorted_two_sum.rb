@@ -10,29 +10,29 @@ target = 9
 
 # Given a sorted array of integers and a target value, determine if there exists two integers in the array that sum up to the target value.
 
-def sorted_two_sum(arr, target)
-  left = 0
-  right = arr.length - 1
+# def sorted_two_sum(arr, target)
+#   left = 0
+#   right = arr.length - 1
 
-  while (arr[left] + arr[right]) != target do
-    if left > right
-      return false
-    end
+#   while (arr[left] + arr[right]) != target do
+#     if left > right
+#       return false
+#     end
 
-    sum = arr[left] + arr[right]
+#     sum = arr[left] + arr[right]
 
-    if sum > target
-      right -= 1
-    end
+#     if sum > target
+#       right -= 1
+#     end
 
-    if sum < target
-      left += 1
-    end
-  end
+#     if sum < target
+#       left += 1
+#     end
+#   end
 
-  return true
-end
+#   return true
+# end
 
-p sorted_two_sum(arr, target)
+# p sorted_two_sum(arr, target)
 
 
