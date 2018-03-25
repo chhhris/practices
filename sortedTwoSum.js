@@ -1,12 +1,16 @@
 // Given a sorted array of integers and a target value, determine if there exists two integers in the array that sum up to the target value.
 
+// Constraints
+// Time Complexity: O(N)
+// Auxiliary Space Complexity: O(1)
+
 // let arr = [1, 5, 13, 2, 9, -6, 18, 3];
-let arr = [1, 2, 5, 8, 13, 22];
-let target = 36;
+const arr = [1, 2, 5, 8, 13, 22];
+const target = 36;
 
 function sortedTwoSum(arr, target) {
-  leftPointer = 0;
-  rightPointer = arr.length - 1;
+  let leftPointer = 0;
+  let rightPointer = arr.length - 1;
 
   while (leftPointer < rightPointer) {
     if (arr[leftPointer] + arr[rightPointer] === target) {
@@ -38,4 +42,4 @@ function sortedTwoSum(arr, target) {
 //   return false;
 // }
 
-console.log(sortedTwoSum(arr, target));
+console.log("\nSolution:\n", sortedTwoSum(arr, target));
