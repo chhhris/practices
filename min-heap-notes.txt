@@ -1,0 +1,40 @@
+
+Min Heap - Array example
+
+Nodes:
+        [6]
+       /   \
+    [7]    [12]
+   /  \     /
+[10] [15] [17]
+
+
+Array:
+
+[6, 7, 12, 10, 15, 17]
+ 0  1   2   3   4   5
+
+Formulas:
+
+Given Child Index, Get Parent Index
+
+  If child index is even
+
+    child_index - 2
+    ---------------
+          2
+
+  If child index is odd
+
+    child_index - 1
+    ---------------
+          2
+
+
+Given Parent Index, Get Child Index
+
+  Odd child index
+    2 * parent_index + 1
+
+  Even child index
+    2 * parent_index + 2  (or odd_child_index + 1)
