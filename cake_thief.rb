@@ -1,4 +1,4 @@
-require 'byebug'
+# https://www.interviewcake.com/question/javascript/cake-thief
 
 def max_duffel_bag_value(cake_arrays, capacity)
   sorted_cakes_by_kilo = cake_arrays.sort_by do |cake_array|
@@ -8,8 +8,7 @@ def max_duffel_bag_value(cake_arrays, capacity)
   current_value = 0
   cake_pointer = 0
 
-  while capacity > 0
-    byebug if sorted_cakes_by_kilo[cake_pointer].nil?
+  while capacity > 0 do
     weight, value = sorted_cakes_by_kilo[cake_pointer][0], sorted_cakes_by_kilo[cake_pointer][1]
 
     cake_multiple = capacity / weight
@@ -20,8 +19,6 @@ def max_duffel_bag_value(cake_arrays, capacity)
     end
 
     cake_pointer += 1
-
-
   end
 
   return current_value
