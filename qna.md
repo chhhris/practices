@@ -1,5 +1,4 @@
-
-## No. 1
+## Question #1
 
 Hi Donald,
 
@@ -7,48 +6,67 @@ Congrats on getting your site up and running - and with one thousand charges in 
 
 I'm sorry for the trouble you've had accessing your data via the API. The good news is it's definitely possible to get the info you're looking for.
 
-From code sample you provided, it looks like you are requesting a list of charges without passing in the optional `limit` parameter. Limit [1] specifices the number of objects to be returned. It can range between 1 and 100, and the default is 10. A request of all 1,000 charges would look like:
+From code sample you provided, it looks like you are requesting a list of charges without passing in the optional `limit` parameter. Limit [1] specifies the number of objects to be returned. It can range between 1 and 100, and the default is 10.
+
+In order to retrieve more than 100 objects, paginate the request by passing the final charge retrieved by the API request as the `starting_after` parameter in a subsequent request to retrieve the next list of charges. As your reporting needs grow, you may need to regularly paginate results [2], resulting in multiple API requests. We recommend that you store any returned data on your side so that your API requests only need to fetch new or updated data, preventing any performance issues.
+
+In order to request all 1,000 charges, you would paginate the requests:
 
 ```
-Stripe::Charge.list(limit: 1000)
+# first 100
+first_100_charges = Stripe::Charge.list(limit: 100)
+
+# grab last charge returned
+last_charge_id = first_100_charges.data.last.id
+
+# request next 100 charges
+second_100_charges = Stripe::Charge.list(limit: 100, started_after: last_charge_id)
+
+# and so on
 ```
 
 If this is not clear or you have any further questions / issues, please don't hesitate to reach out!
 
-Best regards,
+Best regards,<br>
 Chris
 
 [ 1 ] https://stripe.com/docs/api/ruby#list_charges-limit
+[ 2 ] https://stripe.com/docs/api/ruby#pagination
 
-
-
-## No. 2
+## Question #2
 
 Hi James,
 
 This sounds like a very frustrating experience on the day before you're planning to go live -- we will do everything we can to to ensure your integration is up and running before the big day.
 
-From looking at the detailed code sample you provided (thanks for that) I believe the issue is how the POST request is formatted. Fortunately the solution shouldn't require any major revisions -- just a couple small tweaks.
+Using the details you provided, I was able to send a valid request by authenticating via bearer auth (for cross-origin requests):
 
-The current POST request gets formed like this [...] which as you reported is returning `invalid_request_error`. I believe if you modify the POST request to this [...] you should be good to go.
+```
+request.Headers.Add("Authorization", "Bearer sk_test_W8xJYzw56NCHun0FT9iGIJeI");
+```
 
-For your reference, the relevant section of the documentation can be found here [...].
+(Note: make sure you update the request header with the `clientSecretKey` you access from the `ConfigurationManager` rather than passing the test API key directly as is shown in the code sample you provided.)
 
-If you experience any other issues, please let us know and either I or a colleague will get back to you ASAP.
+You can check the authentication [1] section in our API docs for more details, however if you experience any other issues, please let us know and we'll get back to you ASAP.
 
-Kind regards,
+Kind regards,<br>
 Chris
 
+[ 1 ] https://stripe.com/docs/api#authentication
 
-## No. 3
+## Question #3
 
 Hi Jessica,
 
 Thanks for reaching out! It's great to hear everything went well before the launch. I'm happy to help answer your questions about subscriptions and webhooks, and how to get more info about failed payments.
 
-Webhooks are used like this [...] and require code to integrate them into your application.
+1. You are correct: webhooks [1] will notify your application any time an event happens on your account. The way it works: within your application you would create a URL (also referred to as an "endpoint"), and whenever a certain type of event occurs in your Stripe account, Stripe would send a POST request to that URL with all the information about the event.
 
-If this looks intimidating, you may want to consider hiring a developer to help you. There are many freelance providers available that can help you find the right person for your needs, so I included a few below (in no particular order):
+Your application can then use / process / report this information however you like. To use a metaphor: if your application were a house, then the URL you create is kind of like a phone line, which Stripe will call anytime there is new information to report.
+
+2. To clarify, Webhooks can be used to give more than just info about subscriptions. They can report all kinds of events! They are best suited for reporting behind-the-scenes transactions - such as failed payments, disputed charges, a transfer is paid, etc.
+
+If the documentation on Webhooks [1] looks intimidating, you may want to consider hiring a developer to help you. There are many freelance providers / platforms available that can help you find the right person for your needs, so I included a few below (in no particular order):
 
 - http://www.guru.com/d/jobs/q/stripe/ (Guru)
 - http://www.toptal.com/ (TopTal)
@@ -56,38 +74,35 @@ If this looks intimidating, you may want to consider hiring a developer to help 
 - http://www.peopleperhour.com/freelance/stripe (PeoplePerHour)
 - https://coworks.com/ (CoWorks)
 
-Stripe also provides many links to some great Integrations [1] if you're thinking you want to venture in alone, but aren't really a Software Developer.
+Stripe also provides many links to some great Integrations [2] if you're thinking you want to venture in alone, but aren't really a Software Developer.
 
 
-You might want to consider hiring a devleoper integrate the webhooks into your application. We have a few handy resources to help you find developers who have experience integrating Stripe, [here, here and here].
+We are eager to help you to get the most out of Stripe and grow your business. If we can provide any further assistance, please don't hesitate to let us know!
 
-We are eager to help you to get the most out of Stripe and grow your business. If we can provide any further assistance, please don't hesitate to ask.
-
-Best wishes,
+Best wishes,<br>
 Chris
 
-[ 1 ] https://stripe.com/docs/integrations
+[ 1 ] https://stripe.com/docs/webhooks
+[ 2 ] https://stripe.com/docs/integrations
 
 
-## No. 4
+## Question #4
 
 Hi Francesca,
 
-Thanks for reaching out, I'm happy to help you troubleshoot (1) the amount being charged, and (2) error handling on your front end.
+Thanks for reaching out, I'm happy to help you troubleshoot 1. the amount being charged, and 2. error handling on your front end.
 
-(1) The charge amount issue is a relatively quick (and common) fix: The Stripe backend specifies charge amounts to be denominated in cents.
+1. The charge amount issue is a relatively quick (and common) fix: The Stripe backend specifies charge amounts to be denominated in cents.
 
-For example, in the the Gist you provided on line 24 of `frontend.js` the amount `data: { ... , amount: 100 }` actually translates to 100 cents (displayed to you as $1). And that's the amount you are then pass to the `stripe.Charge.create(...)` method on line 15 of `backend.py`.
-
-In order to charge $100 just multiply the dollar amount (100) x the number of cents in a dollar (100). The fix on line 24 of `frontend.js` would look like `data: { ... , amount: 10000 }`.
+In the Gist you provided, on line 24 of `frontend.js` the amount `data: { ... , amount: 100 }` sets the amount to 100 cents (displayed to you as $1). A $100 charge amount would be `data: { ... , amount: 10000 }`.
 
 For your reference, I've included a link to the relevant section in the Stripe API documentation [1].
 
-(2) As for the error handling on your front end, when I play around with it, I think I am able to recreate the issue: it appears that instead of displaying text from the error, it instead prints `[object Object]`.
+2. As for the error handling on your front end, I was able to recreate the issue, whereby instead of displaying the error message, it prints `[object Object]`.
 
-The code is currently printing `response.error` to the page which actually returns an object. You can fix this issue by reaching into the object's `message` attribute like so: `(...).text(response.error.message)`.
+The reason for this is that `response.error` returns an object, which then gets passed to the `text()` method. You can fix this issue by reaching into the object's `message` attribute like so: `(...).text(response.error.message)`.
 
-I've copied the full error response object below. Take a look at how the `error` key returns those nested brackets (`{...}`).
+I've copied the full error response object below. Take a look at how the `error` key returns those nested brackets (`{...}`) indicating it is an object.
 
 ```
 {
@@ -101,13 +116,11 @@ I've copied the full error response object below. Take a look at how the `error`
 }
 ```
 
-In JavaScript this means that `response.error` returns an object. Since you want the text itself, you would chain your method call into the nested object to the `"message"` key in order to return the value: `"Your card number is incorrect."`.
-
-Below is the link [2] to the Stripe documentation with further details about the error response in particular.
+Below is the link [2] to the Stripe documentation with further details about the error response.
 
 If you any of the above is unclear or you we can be of further assistance, please let us know.
 
-Best regards,
+Best regards,<br>
 Chris
 
 [ 1 ] https://stripe.com/docs/api#create_charge-amount
