@@ -1,25 +1,32 @@
-require 'set'
+require 'byebug'
 # @param {String} s
 # @return {String}
 def longest_palindrome(s)
   return s if s.length < 2
-  palindromes = Set.new
-  substrings = {}
+  longest = ''
 
   s.each_char.with_index do |char, index|
-    substring = char
-    palindromes << char # base case single char
+    len1 = expand_from_center(s, index, index)
+    len2 = expand_from_center(s, index, index+1)
+    len  = [len1, len2].max
 
-    s.chars[index+1..-1].each do |inner_char|
-      substring += inner_char
-      if substrings[substring] || substring == substring.reverse
-        palindromes << substring unless substrings[substring]
-        substrings[substring] = true
-      end
+    if longest.length < len
+      start = index - (len - 1) / 2
+      ending = index + len / 2
+      longest = s[start..ending]
     end
   end
 
-  palindromes.max {|a, b| a.length <=> b.length}
+  longest
+end
+
+
+def expand_from_center(s, l, r)
+  while l >=0 && r < s.length && s[l] == s[r]
+    l -= 1
+    r += 1
+  end
+  r - l - 1
 end
 
 expectations = [
